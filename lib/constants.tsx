@@ -4,6 +4,8 @@ import {
   ShoppingBag,
   Tag,
   UsersRound,
+  HandCoins,
+  BookUser,
 } from "lucide-react";
 
 export const navLinks = [
@@ -34,7 +36,12 @@ export const navLinks = [
   },
   {
     url: "/deudas",
-    icon: <UsersRound />,
+    icon: <HandCoins />,
     label: "Deudas",
+  },
+  {
+    url: "/contacts",
+    icon: <BookUser />,
+    label: "contactos",
   },
 ];
