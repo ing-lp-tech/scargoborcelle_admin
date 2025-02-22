@@ -6,6 +6,16 @@ const contactSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  numero: {
+    type: String,
+    required: false,
+    /* unique: true, */
+  },
+  categoria: {
+    type: String,
+    required: false,
+    /* unique: true, */
+  },
   description: String,
 
   /*  products: [

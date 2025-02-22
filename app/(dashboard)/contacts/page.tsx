@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 
-import { columns } from "@/components/collections/CollectionColumns";
-import { colums } from "@/components/contacts/ContactColumns";
+/* import { columns } from "@/components/collections/CollectionColumns"; */
+import { columns } from "@/components/contacts/ContactColumns";
 import { DataTable } from "@/components/custom ui/DataTable";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -71,7 +71,7 @@ const Contacts = () => {
         </SelectContent>
       </Select> */}
 
-      <DataTable columns={colums} data={contacts} searchKey="title" />
+      <DataTable columns={columns} data={contacts} searchKey="nombre" />
     </div>
   );
 };

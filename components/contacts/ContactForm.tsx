@@ -4,7 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "../ui/separator";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +30,8 @@ import Delete from "../custom ui/Delete";
 
 const formSchema = z.object({
   nombre: z.string().min(10).max(20),
+  numero: z.string().min(8).max(20),
+  categoria: z.enum(["Cliente", "Proveedor", "Otros"]), // Valida que solo se permitan estos valores
   description: z.string().min(5).max(200).trim(),
   /* image: z.string(), */
 });
@@ -43,6 +51,8 @@ const ContactForm: React.FC<ContactFormProps> = ({ initialData }) => {
       ? initialData
       : {
           nombre: "",
+          numero: "",
+          categoria: "Cliente", // Valor por defecto válido
           description: "",
           /* image: "", */
         },
@@ -60,6 +70,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ initialData }) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      console.log("values on submit-prueba", values);
       setLoading(true);
       const url = initialData
         ? `/api/contacts/${initialData._id}`
@@ -69,8 +80,9 @@ const ContactForm: React.FC<ContactFormProps> = ({ initialData }) => {
         body: JSON.stringify(values),
       });
       if (res.ok) {
+        console.log("values on submit", values);
         setLoading(false);
-        toast.success(`Contatc ${initialData ? "updated" : "created"}`);
+        toast.success(`Contact ${initialData ? "updated" : "created"}`);
         window.location.href = "/contacts";
         router.push("/contacts");
       }
@@ -91,74 +103,134 @@ const ContactForm: React.FC<ContactFormProps> = ({ initialData }) => {
         <p className="text-heading2-bold">Create Contacto</p>
       )}
       <Separator className="bg-grey-1 mt-4 mb-7" />
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="nombre"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nombre y Apellido</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Nombre completo"
-                    {...field}
-                    onKeyDown={handleKeyPress}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Description"
-                    {...field}
-                    rows={5}
-                    onKeyDown={handleKeyPress}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Image</FormLabel>
-                <FormControl>
-                  <ImageUpload
-                    value={field.value ? [field.value] : []}
-                    onChange={(url) => field.onChange(url)}
-                    onRemove={() => field.onChange("")}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
-          <div className="flex gap-10">
-            <Button type="submit" className="bg-blue-1 text-white">
-              Submit
-            </Button>
-            <Button
-              type="button"
-              onClick={() => router.push("/collections")}
-              className="bg-blue-1 text-white"
-            >
-              Discard
-            </Button>
-          </div>
-        </form>
-      </Form>
+
+      <div className="p-10 overflow-visible">
+        {" "}
+        {/* Asegúrate de que el contenedor no corte el menú */}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="nombre"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nombre y Apellido</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Nombre completo"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="numero"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Numero de telefono</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Numero de telefono"
+                      {...field}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="categoria"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categoría</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger className="w-[180px] mb-6">
+                        {" "}
+                        {/* Añade margen inferior */}
+                        <SelectValue placeholder="Selecciona una categoría" />
+                      </SelectTrigger>
+                      <SelectContent
+                        className="z-[1000] bg-white border border-gray-200 rounded-md shadow-lg" // Fondo blanco y estilos personalizados
+                        position="popper" // Usa posición "popper" para evitar superposiciones
+                        style={{
+                          position: "fixed", // Fija la posición para evitar problemas de flujo
+                          top: "auto", // Ajusta la posición vertical
+                          left: "auto", // Ajusta la posición horizontal
+                          marginTop: "8px", // Añade un margen superior
+                        }}
+                      >
+                        <SelectItem
+                          value="Cliente"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          Cliente
+                        </SelectItem>
+                        <SelectItem
+                          value="Proveedor"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          Proveedor
+                        </SelectItem>
+                        <SelectItem
+                          value="Otros"
+                          className="hover:bg-gray-100 cursor-pointer"
+                        >
+                          Otros
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Description"
+                      {...field}
+                      rows={5}
+                      onKeyDown={handleKeyPress}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex gap-10">
+              <Button type="submit" className="bg-blue-1 text-white">
+                Submit
+              </Button>
+              <Button
+                type="button"
+                onClick={() => router.push("/contacts")}
+                className="bg-blue-1 text-white"
+              >
+                Discard
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 };

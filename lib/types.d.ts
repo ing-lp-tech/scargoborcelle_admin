@@ -6,9 +6,19 @@ type CollectionType = {
   products: ProductType[];
 };
 
+/* type ContactType = {
+  _id: string;
+  nombre: string;
+  numero: string;
+  categoria: array;
+  description: string;
+};
+ */
 type ContactType = {
   _id: string;
   nombre: string;
+  numero: string;
+  categoria: "Cliente" | "Proveedor" | "Otros"; // Ajusta el tipo para que coincida con formSchema
   description: string;
 };
 

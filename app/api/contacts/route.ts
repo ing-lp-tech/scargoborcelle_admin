@@ -16,7 +16,7 @@ export const POST = async (req: NextRequest) => {
 
     await connectToDB();
 
-    const { nombre, description } = await req.json();
+    const { nombre, numero, categoria, description } = await req.json();
 
     const existingContact = await Contact.findOne({ nombre });
 
@@ -24,7 +24,7 @@ export const POST = async (req: NextRequest) => {
       return new NextResponse("Contact already exists", { status: 400 });
     }
 
-    if (!nombre || !description) {
+    if (!nombre || !numero || !categoria || !description) {
       return new NextResponse("Nombre and description are required", {
         status: 400,
       });
@@ -32,6 +32,8 @@ export const POST = async (req: NextRequest) => {
 
     const newContact = await Contact.create({
       nombre,
+      numero,
+      categoria,
       description,
     });
 
@@ -40,7 +42,7 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json(newContact, { status: 200 });
   } catch (err) {
     console.log("[contacts_POST]", err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return new NextResponse("Internal Server Error contact", { status: 500 });
   }
 };
 
