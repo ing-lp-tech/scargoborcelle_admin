@@ -96,8 +96,8 @@ const ContactForm: React.FC<ContactFormProps> = ({ initialData }) => {
     <div className="p-10">
       {initialData ? (
         <div className="flex items-center justify-between">
-          <p className="text-heading2-bold">Edit Collection</p>
-          <Delete id={initialData._id} item="collection" />
+          <p className="text-heading2-bold">Edit Contact</p>
+          <Delete id={initialData._id} item="contact" />
         </div>
       ) : (
         <p className="text-heading2-bold">Create Contacto</p>

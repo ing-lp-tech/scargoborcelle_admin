@@ -22,11 +22,19 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import Delete from "../custom ui/Delete";
 
+/* _id: string;
+tissue: string;
+color: string;
+meters: string;
+peso: string;
+precio: string;  */
+
 const formSchema = z.object({
-  tipo_de_tela: z.string().min(2).max(20),
-  color: z.string().min(2).max(500).trim(),
-  metros: z.string().min(2).max(500).trim(),
-  kgs: z.string().min(2).max(500).trim(),
+  tissue: z.string().min(2).max(20), // Cambiado de "tipo_de_tela" a "tissue"
+  color: z.string().min(2).max(20),
+  meters: z.string().min(2).max(20), // Cambiado de "metros" a "meters"
+  peso: z.string().min(2).max(20), // Cambiado de "kgs" a "peso"
+  precio: z.string().min(2).max(20),
   image: z.string().optional(),
 });
 
@@ -44,10 +52,11 @@ const RollosForm: React.FC<RolloFormProps> = ({ initialData }) => {
     defaultValues: initialData
       ? initialData
       : {
-          tipo_de_tela: "",
+          tissue: "", // Cambiado de "tipo_de_tela" a "tissue"
           color: "",
-          metros: "",
-          kgs: "",
+          meters: "", // Cambiado de "metros" a "meters"
+          peso: "", // Cambiado de "kgs" a "peso"
+          precio: "",
           image: "",
         },
   });
@@ -63,6 +72,7 @@ const RollosForm: React.FC<RolloFormProps> = ({ initialData }) => {
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log("values-Rollos", values);
     try {
       setLoading(true);
       const url = initialData
@@ -83,30 +93,62 @@ const RollosForm: React.FC<RolloFormProps> = ({ initialData }) => {
       toast.error("Something went wrong! Please try again.");
     }
   };
+  /* const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log("submit rollo");
+    try {
+      setLoading(true);
+      const url = initialData
+        ? `/api/rollos/${initialData._id}`
+        : "/api/rollos";
+
+      console.log("url:", url);
+      const res = await fetch(url, {
+        method: initialData ? "PUT" : "POST", // Usar PUT para actualizar y POST para crear
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Something went wrong");
+      }
+
+      const data = await res.json();
+      toast.success(`Rollo ${initialData ? "updated" : "created"}`);
+      router.push("/rollos");
+    } catch (err) {
+      console.error("[rollos_POST]", err);
+      toast.error("Something went wrong! Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }; */
 
   return (
     <div className="p-10">
       {initialData ? (
         <div className="flex items-center justify-between">
-          <p className="text-heading2-bold">Edit Collection</p>
+          <p className="text-heading2-bold">Edit Rollo</p>
           <Delete id={initialData._id} item="collection" />
         </div>
       ) : (
         <p className="text-heading2-bold">Ingreso de rollo</p>
       )}
-      <Separator className="bg-grey-1 mt-4 mb-7" />
+
       <Separator className="bg-grey-1 mt-4 mb-7" />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
-            name="tipo_de_tela"
+            name="tissue"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Tipo de tela</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Title"
+                    placeholder="Tipo de tela"
                     {...field}
                     onKeyDown={handleKeyPress}
                   />
@@ -115,7 +157,7 @@ const RollosForm: React.FC<RolloFormProps> = ({ initialData }) => {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="color"
             render={({ field }) => (
@@ -123,9 +165,26 @@ const RollosForm: React.FC<RolloFormProps> = ({ initialData }) => {
                 <FormLabel>Color</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Description"
+                    placeholder="Color"
                     {...field}
-                    rows={5}
+                    onKeyDown={handleKeyPress}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          /> */}
+
+          <FormField
+            control={form.control}
+            name="color"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Color</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="color"
+                    {...field}
                     onKeyDown={handleKeyPress}
                   />
                 </FormControl>
@@ -135,15 +194,14 @@ const RollosForm: React.FC<RolloFormProps> = ({ initialData }) => {
           />
           <FormField
             control={form.control}
-            name="metros"
+            name="meters"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Metros</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Description"
+                  <Input
+                    placeholder="Metros"
                     {...field}
-                    rows={5}
                     onKeyDown={handleKeyPress}
                   />
                 </FormControl>
@@ -153,15 +211,31 @@ const RollosForm: React.FC<RolloFormProps> = ({ initialData }) => {
           />
           <FormField
             control={form.control}
-            name="kgs"
+            name="peso"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Kgs</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Description"
+                  <Input
+                    placeholder="Kgs"
                     {...field}
-                    rows={5}
+                    onKeyDown={handleKeyPress}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="precio"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Precio</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Precio"
+                    {...field}
                     onKeyDown={handleKeyPress}
                   />
                 </FormControl>

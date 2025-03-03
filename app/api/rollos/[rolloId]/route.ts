@@ -3,39 +3,39 @@ import { auth } from "@clerk/nextjs";
 
 import { connectToDB } from "@/lib/mongoDB";
 import Collection from "@/lib/models/Collection";
-import Contact from "@/lib/models/Contact";
+import Rollos from "@/lib/models/Rollos";
 import Product from "@/lib/models/Product";
 import mongoose from "mongoose";
 
 export const GET = async (
   req: NextRequest,
-  { params }: { params: { contactId: string } }
+  /* { params }: { params: { collectionId: string } } */
+  { params }: { params: { rolloId: string } }
 ) => {
   try {
     await connectToDB();
 
-    /*  const contact = await Collection.findById(params.contactId).populate({
-      path: "contacts",
-      model: Product,
-    }); */
-    const contact = await Contact.findById(params.contactId);
-    if (!contact) {
-      return new NextResponse(
-        JSON.stringify({ message: "Contact not found" }),
-        { status: 404 }
-      );
+    /* const collection = await Collection.findById(params.contactId).populate({ path: "products", model: Product }); */
+    const rollo = await Rollos.findById(params.rolloId).populate({
+      path: "tissue",
+      /* model: Product, */
+    });
+    if (!rollo) {
+      return new NextResponse(JSON.stringify({ message: "Rollo not found" }), {
+        status: 404,
+      });
     }
 
-    return NextResponse.json(contact, { status: 200 });
+    return NextResponse.json(rollo, { status: 200 });
   } catch (err) {
-    console.log("[contactId_GET]", err);
+    console.log("[rolloId_GET]", err);
     return new NextResponse("Internal error", { status: 500 });
   }
 };
 
 export const POST = async (
   req: NextRequest,
-  { params }: { params: { contactId: string } }
+  { params }: { params: { rolloId: string } }
 ) => {
   try {
     const { userId } = auth();
@@ -46,42 +46,39 @@ export const POST = async (
 
     await connectToDB();
     console.log("params", params);
-    let contact = await Contact.findById(params.contactId);
+    let rollo = await Rollos.findById(params.rolloId);
 
-    if (!contact) {
-      return new NextResponse("Contact not found", { status: 404 });
+    if (!rollo) {
+      return new NextResponse("Rollo not found", { status: 404 });
     }
 
-    const { nombre, numero, categoria, description } = await req.json();
+    const { tissue, color, meters, peso, precio, image } = await req.json();
 
-    if (!nombre || !numero || !categoria || !description) {
+    if (!tissue || !color || !meters || !peso || !precio) {
       return new NextResponse("Title and image are required", { status: 400 });
     }
 
-    contact = await Contact.findByIdAndUpdate(
-      params.contactId,
-      { nombre, numero, categoria, description },
+    rollo = await Rollos.findByIdAndUpdate(
+      params.rolloId,
+      { tissue, color, meters, peso, precio, image },
       { new: true }
     );
 
-    await contact.save();
+    await rollo.save();
 
-    return NextResponse.json(contact, { status: 200 });
+    return NextResponse.json(rollo, { status: 200 });
   } catch (err) {
-    console.log("[contactId_POST]", err);
+    console.log("[rollotId_POST]", err);
     return new NextResponse("Internal error", { status: 500 });
   }
 };
 
 export const DELETE = async (
   req: NextRequest,
-  { params }: { params: { contactId: string } }
+  { params }: { params: { rolloId: string } }
 ) => {
   try {
-    console.log(
-      "🟢 DELETE request received for contact ID:",
-      params?.contactId
-    );
+    console.log("🟢 DELETE request received for Rollo ID:", params?.rolloId);
 
     // Verificar autenticación
     const { userId } = auth();
@@ -92,11 +89,8 @@ export const DELETE = async (
     console.log("✅ Authenticated user ID:", userId);
 
     // Validar contactId
-    if (
-      !params?.contactId ||
-      !mongoose.Types.ObjectId.isValid(params.contactId)
-    ) {
-      console.error("❌ Invalid contact ID:", params.contactId);
+    if (!params?.rolloId || !mongoose.Types.ObjectId.isValid(params.rolloId)) {
+      console.error("❌ Invalid Rollo ID:", params.rolloId);
       return new NextResponse("Invalid ID format", { status: 400 });
     }
 
@@ -104,15 +98,15 @@ export const DELETE = async (
     console.log("✅ Connected to MongoDB");
 
     // Convertir a ObjectId
-    const objectId = new mongoose.Types.ObjectId(params.contactId);
+    const objectId = new mongoose.Types.ObjectId(params.rolloId);
 
     // Buscar y eliminar el contacto
-    const deletedContact = await Contact.findByIdAndDelete(objectId);
-    if (!deletedContact) {
-      console.error("❌ Contact not found:", params.contactId);
-      return new NextResponse("Contact not found", { status: 404 });
+    const deleteRollo = await Rollos.findByIdAndDelete(objectId);
+    if (!deleteRollo) {
+      console.error("❌ Rollo not found:", params.rolloId);
+      return new NextResponse("Rollo not found", { status: 404 });
     }
-    console.log("✅ Contact deleted:", deletedContact);
+    console.log("✅ Contact deleted:", deleteRollo);
 
     // Si necesitas eliminar las referencias a los contactos en los productos, puedes descomentar esto
     // const updatedProducts = await Product.updateMany(
@@ -121,9 +115,9 @@ export const DELETE = async (
     // );
     // console.log("✅ Updated products after contact deletion:", updatedProducts);
 
-    return new NextResponse("Contact is deleted", { status: 200 });
+    return new NextResponse("Rollo is deleted", { status: 200 });
   } catch (err) {
-    console.error("❌ Error deleting contact:", err);
+    console.error("❌ Error deleting Rollo:", err);
     return new NextResponse("Internal error", { status: 500 });
   }
 };

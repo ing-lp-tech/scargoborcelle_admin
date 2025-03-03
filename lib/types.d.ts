@@ -58,3 +58,13 @@ type CustomerType = {
   name: string;
   email: string;
 };
+
+type RolloType = {
+  _id: string;
+  tissue: string;
+  color: string;
+  meters: string;
+  peso: string;
+  precio: string;
+  image: string;
+};

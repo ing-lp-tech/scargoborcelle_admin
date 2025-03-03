@@ -44,4 +44,9 @@ export const navLinks = [
     icon: <BookUser />,
     label: "contactos",
   },
+  {
+    url: "/rollos",
+    icon: <BookUser />,
+    label: "rollos",
+  },
 ];
